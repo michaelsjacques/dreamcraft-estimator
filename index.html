@@ -612,7 +612,7 @@ Respond ONLY with valid JSON — no markdown, no backticks, no preamble. Keep al
           } else {
             content = `Re-estimate with these clarifying answers:\n${ctx}\n\nBooth: ${localEst.boothSize} | Location: ${localEst.location}\n\nRespond ONLY with valid JSON. No backticks.`;
           }
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
+          const res = await fetch("/api/estimate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 8000, system, messages: [{ role: "user", content }] }),
@@ -946,7 +946,7 @@ Respond ONLY with valid JSON — no markdown, no backticks, no preamble. Keep al
           } else {
             content = `Generate a general fabrication estimate.\nBooth: ${boothSize} | Location: ${location.toUpperCase()} | ${sqft ? sqft + " sqft" : "size TBD"}\n\nIMPORTANT: Respond ONLY with valid JSON. No backticks.`;
           }
-          const res = await fetch("https://api.anthropic.com/v1/messages", {
+          const res = await fetch("/api/estimate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 8000, system, messages: [{ role: "user", content }] }),
