@@ -14,7 +14,7 @@
 <body>
   <div id="err"></div>
   <div id="root"></div>
-  <script src="config.js"></script>
+  <script>window.DCE_API_KEY="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";</script>
   <script>
     window.onerror=function(m,s,l,c,e){var b=document.getElementById("err");b.style.display="block";b.textContent="Error: "+m+"\nLine:"+l+"\n"+(e?e.stack:"");};
     window.addEventListener("unhandledrejection",function(e){var b=document.getElementById("err");b.style.display="block";b.textContent="Promise: "+(e.reason&&e.reason.stack?e.reason.stack:String(e.reason));});
