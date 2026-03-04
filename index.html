@@ -686,7 +686,8 @@ hp[projId]=Object.assign({},hp[projId]||{},{engineer:wo.engineer||"",shopLead:wo
 localStorage.setItem("dce_homepage_v1",JSON.stringify(hp));
 var nwo=Object.assign({},wo,{launched:true,launchedAt:new Date().toISOString(),projectId:projId});
 saveWO(nwo);
-alert("\uD83D\uDE80 Project launched! Added to Projects, Homepage & Milestones.");
+var _chatKey="dce_chat_v1";var _cd={channels:[],messages:{},userName:"You"};try{_cd=JSON.parse(localStorage.getItem(_chatKey)||"{}");if(!_cd.channels)_cd.channels=[];if(!_cd.messages)_cd.messages={};}catch(e){}var _chanName=np.name||quote.projectName||quote.quoteNumber||"Project";if(!_cd.channels.find(function(c){return c.quoteId===quote.id||c.projectId===projId;})){var _chanId=genId();_cd.channels.push({id:_chanId,name:_chanName,quoteId:quote.id,projectId:projId,createdAt:new Date().toISOString()});_cd.messages[_chanId]=[];localStorage.setItem(_chatKey,JSON.stringify(_cd));}var _shKey="dce_shop_hours_v2";var _shd={assignments:{},tasks:[]};try{_shd=JSON.parse(localStorage.getItem(_shKey)||"{}");if(!_shd.tasks)_shd.tasks=[];if(!_shd.assignments)_shd.assignments={};}catch(e){}var _existTasks=_shd.tasks.filter(function(t){return t.projectName===_chanName;});if(_existTasks.length===0){var _secTypes=["Fabrication","Graphics","Installation","Dismantle","Shipping","AV/Tech","Storage","Rental","Paint","Welding","CNC"];var _sects=wo.sections||{};_secTypes.forEach(function(st){var sw=_sects[st]||{useVendor:false,extraItems:[]};var _hrs=calcSecHours(sw,sw);if(_hrs>0){_shd.tasks.push({id:genId(),taskName:st,projectName:_chanName,quoteId:quote.id,projectId:projId,dept:SECT_TO_DEPT[st]||st,totalHours:_hrs,hoursPerWeek:Math.round(_hrs/2),status:"pending",createdAt:new Date().toISOString()});}});localStorage.setItem(_shKey,JSON.stringify(_shd));}
+alert("\uD83D\uDE80 Project launched! Chat channel and shop tasks created.");
 }catch(e){alert("Error: "+e.message);}}
 return CE("div",{style:{maxWidth:1200,margin:"0 auto",padding:"32px 24px"}},
 CE("div",{style:{marginBottom:28,display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexWrap:"wrap",gap:12}},
@@ -1034,7 +1035,7 @@ function MilestoneCalendar(){
   var now=new Date();
   var ym=useState([now.getFullYear(),now.getMonth()]);
   var year=ym[0][0];var month=ym[0][1];var setYM=ym[1];
-  var sel=useState(null);var selectedId=sel[0];var setSelectedId=sel[1];
+  var sel=useState(null);var selectedId=sel[0];var setSelectedId=sel[1];var _hst=(0,import_react.useState)({});var hiddenMap=_hst[0];var setHiddenMap=_hst[1];var _ast=(0,import_react.useState)(false);var showArchived=_ast[0];var setShowArchived=_ast[1];
 
   var COLORS=["#3b82f6","#8b5cf6","#10b981","#f59e0b","#ef4444","#06b6d4","#f97316","#ec4899","#84cc16","#6366f1"];
   var MONTH_NAMES=["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -1045,7 +1046,7 @@ function MilestoneCalendar(){
 
   // Build event map: "YYYY-MM-DD" -> [{label, type, projectName, color}]
   var eventMap={};
-  schedules.forEach(function(s,si){
+  schedules.forEach(function(s,si){if(hiddenMap[s.id])return;
     var col=COLORS[si%COLORS.length];
     var addEv=function(dateStr,label,type){
       if(!dateStr)return;
@@ -1129,12 +1130,12 @@ function MilestoneCalendar(){
     ),
 
     // ── PROJECT LIST ──
-    CE("div",{style:{marginBottom:12,fontSize:9,fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--text3)"}},"All Milestone Schedules"),
+    CE("div",{style:{marginBottom:12,fontSize:9,fontWeight:700,letterSpacing:"0.15em",textTransform:"uppercase",color:"var(--text3)"}},"All Milestone Schedules"),CE("button",{onClick:function(){setShowArchived(function(v){return !v;});},style:{marginLeft:"auto",background:"none",border:"1px solid var(--border2)",borderRadius:4,cursor:"pointer",padding:"2px 8px",fontSize:11,color:showArchived?"var(--accent1)":"var(--text3)"}},showArchived?"Hide Archived":"Show Archived"),
     schedules.length===0
       ? CE("div",{style:{padding:"32px",textAlign:"center",color:"var(--text4)",border:"1px dashed var(--border2)",fontSize:13}},
           "No milestone schedules yet — generate one from Milestone Creator")
       : CE("div",{style:{display:"flex",flexDirection:"column",gap:1}},
-          schedules.map(function(s,si){
+          schedules.filter(function(s){return showArchived?true:!s.archived;}).map(function(s,si){
             var col=COLORS[si%COLORS.length];
             var isOpen=selectedId===s.id;
             var launchFmt=s.launch_date?new Date(s.launch_date+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}):"No date";
@@ -1150,7 +1151,7 @@ function MilestoneCalendar(){
                   CE("div",{style:{fontSize:10,color:"var(--text3)",marginTop:2}},
                     (s.client?"Client: "+s.client+" · ":"")+"Launch: "+launchFmt+(createdFmt?" · Created "+createdFmt:""))
                 ),
-                CE("div",{style:{fontSize:12,color:"var(--text3)",fontWeight:700}},isOpen?"▲":"▼")
+                CE("div",{style:{display:"flex",alignItems:"center",gap:4}},CE("button",{title:hiddenMap[s.id]?"Show on calendar":"Hide from calendar",onClick:function(e){e.stopPropagation();setHiddenMap(function(m){var n=Object.assign({},m);if(n[s.id])delete n[s.id];else n[s.id]=true;return n;});},style:{background:"none",border:"1px solid var(--border2)",borderRadius:4,cursor:"pointer",padding:"1px 5px",fontSize:11,color:hiddenMap[s.id]?"var(--text4)":"var(--accent1)",opacity:hiddenMap[s.id]?0.5:1}},hiddenMap[s.id]?"🚫":"👁"),CE("button",{title:s.archived?"Unarchive":"Archive",onClick:function(e){e.stopPropagation();var updated=schedules.map(function(x){return x.id===s.id?Object.assign({},x,{archived:!x.archived}):x;});setSchedules(updated);},style:{background:"none",border:"1px solid var(--border2)",borderRadius:4,cursor:"pointer",padding:"1px 5px",fontSize:11,color:s.archived?"var(--accent2)":"var(--text3)"}},s.archived?"📥":"🗄"),CE("div",{style:{fontSize:12,color:"var(--text3)",fontWeight:700}},isOpen?"▲":"▼"))
               ),
               // Expanded detail
               isOpen&&CE("div",{style:{padding:"16px 20px",borderTop:"1px solid var(--border2)",background:"var(--card)"}},
