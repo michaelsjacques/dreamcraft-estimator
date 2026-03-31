@@ -318,7 +318,7 @@ return CE("div",{style:{maxWidth:680,margin:"0 auto",padding:"48px 32px"}},
       CE(LocationAutocomplete,{value:"",onChange:function(){},onSelect:function(){},placeholder:"e.g. Las Vegas Convention Center..."})
     )
   ),
-  CE("div",{style:{background:"var(--bg2)",border:"1px solid var(--border)",padding:28,marginTop:20}},
+  (window.location.hostname==="localhost"||window.location.hostname==="127.0.0.1")?CE("div",{style:{background:"var(--bg2)",border:"1px solid var(--accent-border)",padding:28,marginTop:20,borderLeft:"3px solid var(--accent)"}},CE("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:16}},CE("span",{style:{fontSize:20}},"🔑"),CE("div",null,CE("div",{style:{fontSize:14,fontWeight:700,letterSpacing:"0.06em",textTransform:"uppercase"}},"Local Dev API Key"),CE("div",{style:{fontSize:11,color:"var(--text3)",marginTop:2}},"Only shown on localhost. Bypasses proxy for local testing."))),CE("input",{type:"password",defaultValue:localStorage.getItem("dce_dev_api_key")||"",onChange:function(e){localStorage.setItem("dce_dev_api_key",e.target.value);},placeholder:"sk-ant-api03-...",style:{width:"100%",padding:"10px 12px",background:"var(--input-bg)",border:"1px solid var(--input-border)",color:"var(--text)",fontSize:13,outline:"none",fontFamily:"monospace",marginBottom:8}}),CE("div",{style:{fontSize:10,color:"var(--text4)"}},"Stored only in this browser. Remove before sharing your screen.")):null,CE("div",{style:{background:"var(--bg2)",border:"1px solid var(--border)",padding:28,marginTop:20}},
     CE("div",{style:{display:"flex",alignItems:"center",gap:10,marginBottom:16}},
       CE("span",{style:{fontSize:20}},"💾"),
       CE("div",null,
